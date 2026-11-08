@@ -68,12 +68,14 @@ Instead of jumping between dozens of tools, VeltCLI organizes common research wo
 | Category           | Capabilities                                     |
 | ------------------ | ------------------------------------------------ |
 | 🌐 Web Security    | Headers, redirects, uptime, public-page analysis |
-| 🧬 DNS             | DNS records, SPF, DMARC, DNSSEC, ASN             |
-| 🔍 Vulnerability   | CVE research, security checks, exposure analysis |
+| 🧬 DNS             | DNS records, SPF, DMARC, DNSSEC, ASN, passive DNS |
+| 🔍 Vulnerability   | CVE research, secret scan, takeover, exposure     |
+| 🐙 GitHub          | Profiles, organizations, repositories, commits   |
+| 🗄️ Archive         | Wayback history, archived URLs, removed pages    |
 | 👤 Social          | Public username discovery                        |
 | 📧 Email           | Domain security & header analysis                |
 | 🌎 IP Intelligence | Resolution, reverse DNS & network context        |
-| ☁️ Cloud           | CDN, storage & origin analysis                   |
+| ☁️ Cloud           | CDN, storage, origin & Shodan host analysis      |
 | 📰 News            | Article research & source comparison             |
 | 🗺️ Geospatial     | Public location & coordinate research            |
 | 🖼️ Images         | Metadata, hashes & OCR workflows                 |
@@ -152,13 +154,25 @@ outputs/
 
 ### Username Research
 
+Sherlock runs by default (`sherlock-project` is pinned in `requirements.txt`), and
+its per-platform results are parsed rather than dumped:
+
 ```text
-/help
-set username example_user
+set username example_user    # method defaults to sherlock
 run
 ```
 
-Returns possible public profile matches.
+```text
+set method sherlock          # default: fast, no API key
+set method maigret           # larger site database
+set method both              # run both and compare coverage
+set site github,twitter      # optional: narrow Sherlock's site list
+run sherlock                 # one-off: force Sherlock regardless of method
+```
+
+Each run reports the engine and version, the confirmed profile count, one URL per
+platform, and the saved report folder. Confirmed profiles are also recorded as
+graph nodes plus a single INFO finding, so the evidence trail stays consistent.
 
 > Results are **leads**, not proof of identity.
 
@@ -179,6 +193,10 @@ Referrer-Policy
 Permissions-Policy
 ```
 
+Each run now scores the header set (0–100 with a letter grade), reports whether
+the CSP contains `unsafe-inline`/`unsafe-eval`, and counts cookies set on the
+response.
+
 ### DNS Research
 
 ```text
@@ -197,6 +215,53 @@ DNSSEC
 Nameservers
 Reverse DNS
 ```
+
+DNS runs also report the detected DNS and mail provider, whether wildcard DNS is
+enabled, which email-security records exist, and the published CAA policy.
+
+### GitHub Research
+
+Public API only, no key required (rate limited to 60 requests/hour):
+
+```text
+set target octocat                 # profile: dates, company, links, repos
+set target github                  # organization: members and repositories
+set target octocat/Hello-World     # commit author identities
+```
+
+### Archive Research
+
+```text
+set target https://example.com
+run                                # history span and capture count
+```
+
+Three archive tools are available: an overview, a URL list that flags
+sensitive-looking paths (`backup`, `config`, `.sql`), and a check that compares
+sampled archived URLs against the live site to find pages that are gone now.
+
+### Passive DNS & Subdomain Takeover
+
+```text
+set target example.com
+run
+```
+
+Passive DNS adds third-party hostnames without touching the target. The takeover
+check follows CNAMEs and looks for provider placeholder pages that could be
+claimed; findings are always marked for manual confirmation.
+
+### Shodan Host Intel
+
+```text
+set target 1.1.1.1
+run
+```
+
+Works without a key through Shodan's free InternetDB snapshot (ports, hostnames,
+CPEs, tags, cached CVEs). Adding a `SHODAN_API_KEY` in settings unlocks banners,
+history, and the Shodan search tool; without it the search tool says so instead
+of inventing results.
 
 ---
 

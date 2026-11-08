@@ -27,6 +27,7 @@ TYPE_LABELS = {
     "host": "Host",
     "url": "URL",
     "certificate": "Certificate",
+    "username": "Username",
 }
 
 

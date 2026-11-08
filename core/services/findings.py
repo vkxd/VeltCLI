@@ -50,6 +50,15 @@ class FindingsService:
                 findings = [f for f in findings if f["severity"] == wanted]
         return list(reversed(findings))  # newest first
 
+    def exists(self, title: str, target: str) -> bool:
+        """True when an identical finding was already recorded for this target."""
+        wanted_title = str(title or "").strip().lower()
+        wanted_target = str(target or "").strip().lower()
+        for finding in (self.store.get() or {}).get("findings", []):
+            if finding["title"].strip().lower() == wanted_title and finding["target"].strip().lower() == wanted_target:
+                return True
+        return False
+
     def view(self, finding_id: str) -> dict | None:
         for finding in (self.store.get() or {}).get("findings", []):
             if finding["id"].lower() == finding_id.strip().lower():

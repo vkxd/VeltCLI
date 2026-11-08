@@ -15,7 +15,7 @@ from core.services.findings import SEVERITIES
 ENGINE_CATEGORIES = {
     "vulnerability": "vuln",
     "dns": "infra",
-    "web": "web_copy",
+    "web": "general",
     "social": "social",
     "email": "general",
     "ip": "general",
@@ -40,6 +40,9 @@ def style_output_line(line: str) -> Text:
         styled.stylize(colors[match.group()], match.start(), match.end())
     return styled
 
+
+# Fields an engine can default sensibly, so the operator is not forced to fill them.
+OPTIONAL_FIELDS = {"method", "site"}
 
 RISK_COLORS = {
     "low": "#73d6a2",
@@ -346,7 +349,7 @@ class ToolCli(Screen):
         self.output_lines.extend([
             "",
             "  run                   Execute the selected tool",
-            "  username search: set method maigret|sherlock",
+            "  username search: Sherlock by default; set method maigret|sherlock|both",
             "  run provider          Create a new inbox (tempmail)",
             "  run check             Check an existing inbox (tempmail)",
             "  list                  List available providers",
@@ -398,7 +401,10 @@ class ToolCli(Screen):
             return
 
         # Standard tool execution — validate required fields
-        missing = [name for name, _, _ in self.tool.fields if not self.values.get(name)]
+        missing = [
+            name for name, _, _ in self.tool.fields
+            if not self.values.get(name) and name not in OPTIONAL_FIELDS
+        ]
         if missing:
             self.output_lines.extend([f"[!] Missing input: {', '.join(missing)}", f"[>] Set it with: set {missing[0]} <value>"])
             return

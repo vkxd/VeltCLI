@@ -8,3 +8,7 @@ beautifulsoup4==4.12.3
 selenium==4.25.0
 webdriver-manager==4.0.2
 maigret==0.5.0
+sherlock-project==0.16.0
+
+# Optional extras: image/EXIF metadata, sanitized copies and local OCR.
+# pip install pillow pytesseract
