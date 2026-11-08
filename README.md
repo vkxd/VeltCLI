@@ -28,7 +28,7 @@
 <!-- Replace this with a real screenshot/GIF -->
 
 <p align="center">
-  <img width="1879" height="948" alt="image" src="https://github.com/user-attachments/assets/b30c6c74-8f23-46a5-8f6f-e85358fdcc03" />
+<img width="1893" height="996" alt="image" src="https://github.com/user-attachments/assets/0bc6027b-8311-4251-943e-d26a8e1363cc" />
 
 </p>
 
@@ -340,9 +340,8 @@ Results can be affected by:
 * [x] DNS research
 * [x] Web security checks
 * [x] Username research
-* [ ] More plugins
 * [ ] Improved reporting
-* [ ] Plugin marketplace
+* [ ] Multi Tool uage
 * [ ] Better configuration system
 * [ ] Expanded provider support
 
